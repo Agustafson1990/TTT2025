@@ -1,0 +1,13 @@
+/routing table
+add name=to_isp1 fib
+add name=guest_isp1 fib
+
+/ip route
+add dst-address=0.0.0.0/0 gateway=192.168.1.1 routing-table=to_isp1 distance=1 check-gateway=ping
+add dst-address=0.0.0.0/0 gateway=192.168.2.1 routing-table=to_isp1 distance=2 check-gateway=ping
+add dst-address=0.0.0.0/0 gateway=192.168.1.1 routing-table=guest_isp1 distance=1 check-gateway=ping
+
+/routing rule
+add src-address=192.168.10.0/24 action=lookup-only-in-table table=to_isp1
+add src-address=192.168.20.0/24 action=lookup-only-in-table table=to_isp1
+add src-address=192.168.99.0/24 action=lookup-only-in-table table=guest_isp1
