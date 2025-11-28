@@ -11,7 +11,8 @@ add name=LAN
 add name=WAN
 
 /ip neighbor discovery-settings 
-set discover-interface-list=WAN 
+set discover-interface-list=WAN
+set discover-interface-list=LAN
 
 /ip pool
 add name="VLAN_10 Office WiFi" ranges=192.168.10.50-192.168.10.100
