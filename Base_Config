@@ -10,6 +10,9 @@ add interface=VLAN_Bridge name="VLAN_99 Guest WiFi" vlan-id=99
 add name=LAN
 add name=WAN
 
+/ip neighbor discovery-settings 
+set discover-interface-list=WAN 
+
 /ip pool
 add name="VLAN_10 Office WiFi" ranges=192.168.10.50-192.168.10.100
 add name="VLAN_20 Office WiFi" ranges=192.168.20.50-192.168.20.100
@@ -56,5 +59,17 @@ add address=192.168.99.0/24 comment="VLAN_99 Guest WiFi" dns-server=192.168.99.1
 add action=masquerade chain=srcnat out-interface-list=WAN
 
 /tool romon set enabled=yes
+
+/tool graphing interface add
+ 
+/tool graphing queue add
+ 
+/tool graphing resource add
+
+/system logging
+set 0 action=disk  
+set 1 action=disk  
+set 2 action=disk  
+
 
 /user set admin password=admin
