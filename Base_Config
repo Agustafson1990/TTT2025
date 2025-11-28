@@ -54,6 +54,9 @@ add address=192.168.10.0/24 comment="VLAN_10 Office WiFi" dns-server=192.168.10.
 add address=192.168.20.0/24 comment="VLAN_20 Office Wired" dns-server=192.168.20.1 gateway=192.168.20.1
 add address=192.168.99.0/24 comment="VLAN_99 Guest WiFi" dns-server=192.168.99.1 gateway=192.168.99.1
 
+/ip dns 
+set servers=1.1.1.1,8.8.8.8 allow-remote-requests=yes
+
 /ip firewall nat
 add action=masquerade chain=srcnat out-interface-list=WAN
 
