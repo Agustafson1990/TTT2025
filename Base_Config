@@ -55,4 +55,6 @@ add address=192.168.99.0/24 comment="VLAN_99 Guest WiFi" dns-server=192.168.99.1
 /ip firewall nat
 add action=masquerade chain=srcnat out-interface-list=WAN
 
+/tool romon set enabled=yes
+
 /user set admin password=admin
