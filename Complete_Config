@@ -1,0 +1,87 @@
+# 2025-11-04 12:25:39 by RouterOS 7.20.4
+# software id = YE93-UCEW
+#
+# model = RB4011iGS+5HacQ2HnD
+# serial number = D43E0DBC0E3B
+/interface bridge
+add name=VLAN_Bridge vlan-filtering=yes
+/interface wireless
+set [ find default-name=wlan1 ] ssid=BMN
+set [ find default-name=wlan2 ] ssid=BMN
+/interface vlan
+add interface=VLAN_Bridge name="VLAN_10 Office WiFi" vlan-id=10
+add interface=VLAN_Bridge name="VLAN_20 Office Wired" vlan-id=20
+add interface=VLAN_Bridge name="VLAN_99 Guest WiFi" vlan-id=99
+/interface list
+add name=LAN
+add name=WAN
+/interface wireless security-profiles
+set [ find default=yes ] supplicant-identity=BMN
+/ip pool
+add name="VLAN_10 Office WiFi" ranges=192.168.10.50-192.168.10.100
+add name="VLAN_20 Office Wired" ranges=192.168.20.50-192.168.20.100
+add name="VLAN_99 Guest WiFi" ranges=192.168.99.50-192.168.99.100
+/ip dhcp-server
+add address-pool="VLAN_10 Office WiFi" interface="VLAN_10 Office WiFi" name="VLAN_10 Office WiFi"
+add address-pool="VLAN_20 Office Wired" interface="VLAN_20 Office Wired" name="VLAN_20 Office Wired"
+add address-pool="VLAN_99 Guest WiFi" interface="VLAN_99 Guest WiFi" name="VLAN_99 Guest WiFi"
+/port
+set 0 name=serial0
+set 1 name=serial1
+/routing table
+add fib name=to_isp1
+add fib name=guest_isp1
+/interface bridge port
+add bridge=VLAN_Bridge interface=ether3 pvid=10
+add bridge=VLAN_Bridge interface=ether4 pvid=20
+add bridge=VLAN_Bridge interface=ether5 pvid=99
+/ip neighbor discovery-settings
+set discover-interface-list=all
+/interface bridge vlan
+add bridge=VLAN_Bridge comment="VLAN_10 Office WiFi" tagged=VLAN_Bridge untagged=ether3 vlan-ids=10
+add bridge=VLAN_Bridge comment="VLAN_20 Office Wired" tagged=VLAN_Bridge untagged=ether4 vlan-ids=20
+add bridge=VLAN_Bridge comment="VLAN_99 Guest WiFi" tagged=VLAN_Bridge untagged=ether5 vlan-ids=99
+/interface list member
+add interface=ether3 list=LAN
+add interface=ether4 list=LAN
+add interface=ether5 list=LAN
+add interface=ether1 list=WAN
+add interface=ether2 list=WAN
+/ip address
+add address=192.168.10.1/24 comment="VLAN_10 Office WiFi" interface="VLAN_10 Office WiFi" network=192.168.10.0
+add address=192.168.20.1/24 comment="VLAN_20 Office Wired" interface="VLAN_20 Office Wired" network=192.168.20.0
+add address=192.168.99.1/24 comment="VLAN_99 Guest WiFi" interface="VLAN_99 Guest WiFi" network=192.168.99.0
+/ip dhcp-client
+add add-default-route=no comment="ISP 1 DHCP" interface=ether1
+add add-default-route=no comment="ISP 2 DHCP" interface=ether2
+/ip dhcp-server network
+add address=192.168.10.0/24 comment="VLAN_10 Office WiFi" dns-server=192.168.10.1 gateway=192.168.10.1
+add address=192.168.20.0/24 comment="VLAN_20 Office Wired" dns-server=192.168.20.1 gateway=192.168.20.1
+add address=192.168.99.0/24 comment="VLAN_99 Guest WiFi" dns-server=192.168.99.1 gateway=192.168.99.1
+/ip dns
+set allow-remote-requests=yes servers=1.1.1.1,8.8.8.8
+/ip firewall nat
+add action=masquerade chain=srcnat out-interface-list=WAN
+add action=masquerade chain=srcnat out-interface-list=WAN
+/ip route
+add check-gateway=ping distance=1 dst-address=0.0.0.0/0 gateway=192.168.1.1 routing-table=to_isp1
+add check-gateway=ping distance=2 dst-address=0.0.0.0/0 gateway=192.168.2.1 routing-table=to_isp1
+add check-gateway=ping distance=1 dst-address=0.0.0.0/0 gateway=192.168.1.1 routing-table=guest_isp1
+/routing rule
+add action=lookup-only-in-table src-address=192.168.10.0/24 table=to_isp1
+add action=lookup-only-in-table src-address=192.168.20.0/24 table=to_isp1
+add action=lookup-only-in-table src-address=192.168.99.0/24 table=guest_isp1
+/system logging
+set 0 action=disk
+set 1 action=disk
+set 2 action=disk
+/system routerboard settings
+set auto-upgrade=yes
+/tool graphing interface
+add
+/tool graphing queue
+add
+/tool graphing resource
+add
+/tool romon
+set enabled=yes
